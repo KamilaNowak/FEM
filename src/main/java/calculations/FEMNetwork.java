@@ -17,8 +17,8 @@ public class FEMNetwork {
 
         double H = dataReader.getH();
         double W = dataReader.getW();
-        double nW = dataReader.getnW();
-        double nH = dataReader.getnH();
+        double nW = dataReader.getNW();
+        double nH = dataReader.getNH();
 
         double dX = W / (nW - 1);
         double dY = H / (nH - 1);
@@ -31,19 +31,25 @@ public class FEMNetwork {
                 id++;
                 double x = i * dX;
                 double y = j * dY;
+
                 node = new Node(x, y);
                 node.setId(id);
+                node.setT(dataReader.getT0());
+
+                //dla Hbc
+                if (x == 0 || x == W || y == 0 || y == H )
+                    node.setBc(true);
+
                 resultNodes.add(node);
             }
         }
     }
 
     public void createElements(DataReader dataReader, List<Element> resultElements) {
-        double nW = dataReader.getnW();
-        double nH = dataReader.getnH();
-        double nE = dataReader.getnE();
-
+        double nH = dataReader.getNH();
+        double nE = dataReader.getNE();
         int elem = 0;
+
         for (int i = 1; i <= nE + 2; i++) {
             if (i % nH == 0) elem++;
         }
@@ -51,8 +57,8 @@ public class FEMNetwork {
         for (int i = 1; i <= nE + 2; i++) {
             if (i % nH == 0) continue;
 
-            Element element= new Element();
-            List<Integer> elemensIDs = new ArrayList<>();
+            Element element = new Element();
+            List<Integer> elementIDs = new ArrayList<>();
             List<Node> nodes = new ArrayList<>();
 
             int id1 = i;
@@ -60,16 +66,17 @@ public class FEMNetwork {
             int id3 = (int) (i + nH + 1);
             int id4 = i + 1;
 
-            elemensIDs.add(id1);
-            elemensIDs.add(id2);
-            elemensIDs.add(id3);
-            elemensIDs.add(id4);
+            elementIDs.add(id1);
+            elementIDs.add(id2);
+            elementIDs.add(id3);
+            elementIDs.add(id4);
 
             nodes.add(this.nodes.get(id1 - 1));
             nodes.add(this.nodes.get(id2 - 1));
             nodes.add(this.nodes.get(id3 - 1));
             nodes.add(this.nodes.get(id4 - 1));
-            element.setiDs(elemensIDs);
+
+            element.setIDs(elementIDs);
             element.setNodes(nodes);
             resultElements.add(element);
         }
