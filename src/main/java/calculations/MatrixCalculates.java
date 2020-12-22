@@ -9,6 +9,7 @@ import org.la4j.Matrices;
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.inversion.MatrixInverter;
+import printable.Print;
 import schemas.Element;
 import schemas.Network;
 import schemas.Node;
@@ -389,6 +390,7 @@ public class MatrixCalculates {
         double[] CxT0 = MatrixUtils.MatrixXVector(C, temp);
         double[] P_Final = new double[SIZE];
 
+        System.out.println("C * t0");
         for (int i = 0; i < SIZE; i++) {
             P_Final[i] = CxT0[i] - P_Global[i];
         }
