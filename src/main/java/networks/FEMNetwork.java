@@ -1,6 +1,6 @@
-package calculations;
+package networks;
 
-import input.DataReader;
+import readers.DataReader;
 import schemas.Element;
 import schemas.Network;
 import schemas.Node;
@@ -12,6 +12,17 @@ public class FEMNetwork {
 
     private List<Node> nodes;
     private List<Element> elements;
+
+    public Network createNetwork(DataReader data) {
+        Network network = new Network();
+
+        nodes = network.getNodes();
+        elements = network.getElements();
+
+        this.createNodes(data, nodes);
+        this.createElements(data, elements);
+        return network;
+    }
 
     public void createNodes(DataReader dataReader, List<Node> resultNodes) {
 
@@ -36,8 +47,8 @@ public class FEMNetwork {
                 node.setId(id);
                 node.setT(dataReader.getT0());
 
-                //dla Hbc
-                if (x == 0 || x == W || y == 0 || y == H )
+                //dla Hbc sprawdzam czy jest to ścianka
+                if (x == 0 || x == W || y == 0 || y == H)
                     node.setBc(true);
 
                 resultNodes.add(node);
@@ -47,15 +58,11 @@ public class FEMNetwork {
 
     public void createElements(DataReader dataReader, List<Element> resultElements) {
         double nH = dataReader.getNH();
-        double nE = dataReader.getNE();
-        int elem = 0;
+        double nW = dataReader.getNW();
 
+        double nE = (nH - 1) * (nW - 1);
         for (int i = 1; i <= nE + 2; i++) {
-            if (i % nH == 0) elem++;
-        }
-
-        for (int i = 1; i <= nE + 2; i++) {
-            if (i % nH == 0) continue;
+            if (i % nH == 0) continue; // trzeba wejść do do nowego wiersza siatki
 
             Element element = new Element();
             List<Integer> elementIDs = new ArrayList<>();
@@ -71,7 +78,7 @@ public class FEMNetwork {
             elementIDs.add(id3);
             elementIDs.add(id4);
 
-            nodes.add(this.nodes.get(id1 - 1));
+            nodes.add(this.nodes.get(id1 - 1)); // odejmuje jeden bo iteruję od 1
             nodes.add(this.nodes.get(id2 - 1));
             nodes.add(this.nodes.get(id3 - 1));
             nodes.add(this.nodes.get(id4 - 1));
@@ -80,16 +87,5 @@ public class FEMNetwork {
             element.setNodes(nodes);
             resultElements.add(element);
         }
-    }
-
-    public Network createNetwork(DataReader data) {
-        Network network = new Network();
-
-        nodes = network.getNodes();
-        elements = network.getElements();
-
-        this.createNodes(data, nodes);
-        this.createElements(data, elements);
-        return network;
     }
 }

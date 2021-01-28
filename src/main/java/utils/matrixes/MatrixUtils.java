@@ -1,6 +1,6 @@
-package utils;
+package utils.matrixes;
 
-import input.DataReader;
+import readers.DataReader;
 import schemas.Element;
 import schemas.Node;
 import java.io.FileNotFoundException;
@@ -10,6 +10,7 @@ public class MatrixUtils {
 
     private static DataReader data;
 
+    // liczy jakobian dla każdego wezla, 4 dla elementu czyli 1 dla każdego węzła.
     public double calculateXJacobian(double[] derivatives, Element element) {
         double jacobianDerivativeX = 0;
         List<Node> elementNodes = element.getNodes();
@@ -23,7 +24,7 @@ public class MatrixUtils {
             jacobianDerivativeX += derivatives[i] * x[i];
         return jacobianDerivativeX;
     }
-
+    // liczy jakobian dla każdego wezla, 4 dla elementu czyli 1 dla każdego węzła.
     public double calculateYJacobian(double[] derivatives, Element element) {
         double jacobianDerivativeY = 0;
         List<Node> elementNodes = element.getNodes();
@@ -37,19 +38,6 @@ public class MatrixUtils {
         return jacobianDerivativeY;
     }
 
-
-    public static double[][] ksiEtaSurface2p() throws FileNotFoundException {
-        data = new DataReader();
-        double pc1 = data.getPc2().get(0); //-0.57735026919;
-        double pc2 = data.getPc2().get(1); //0.57735026919;
-
-        return new double[][]{ //
-                {pc1, -1, pc2, -1},
-                {1, pc1, 1, pc2},
-                {pc2, 1, pc1, 1},
-                {-1, pc2, -1, pc1}
-        };
-    }
 
     public static double[][] sumMatrix4x4(double[][] arr1, double[][] arr2) {
         double[][] sumArray = new double[4][4];
@@ -86,20 +74,7 @@ public class MatrixUtils {
         return resultMatrix;
     }
 
-    public static double[][] multiplyMatrix2x9(double[][] arr1, double[][] arr2) {
-        double[][] resultMatrix = new double[2][9];
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 9; j++)
-                resultMatrix[i][j] = 0;
-        }
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 9; j++) {
-                for (int k = 0; k < 2; k++)
-                    resultMatrix[i][j] += (arr1[i][k] * arr2[k][j]);
-            }
-        }
-        return resultMatrix;
-    }
+
 
     public static double[][] multiplyMatrix4x4Transposition(double[] arr1, double[] arr2) {
         double[][] resultArray = new double[4][4];
@@ -127,5 +102,32 @@ public class MatrixUtils {
         return resultArray;
     }
 
+    public static double[][] multiplyMatrix2x9(double[][] arr1, double[][] arr2) {
+        double[][] resultMatrix = new double[2][9];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 9; j++)
+                resultMatrix[i][j] = 0;
+        }
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 9; j++) {
+                for (int k = 0; k < 2; k++)
+                    resultMatrix[i][j] += (arr1[i][k] * arr2[k][j]);
+            }
+        }
+        return resultMatrix;
+    }
+
+    public static double[][] ksiEtaSurface2p() throws FileNotFoundException {
+        data = new DataReader();
+        double pc1 = data.getPc2().get(0); // -0.57735026919;
+        double pc2 = data.getPc2().get(1); // 0.57735026919;
+
+        return new double[][]{ //
+                {pc1, -1, pc2, -1},
+                {1, pc1, 1, pc2},
+                {pc2, 1, pc1, 1},
+                {-1, pc2, -1, pc1}
+        };
+    }
 }
 

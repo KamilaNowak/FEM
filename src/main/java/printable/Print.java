@@ -20,9 +20,7 @@ public class Print {
     }
 
     public static void printVec(double[] vector, int length) {
-        for (int i = 0; i < length; i++) {
-            System.out.print(vector[i] +"\t");
-        }
+        for (int i = 0; i < length; i++) { System.out.print(vector[i] +"\t"); }
         System.out.println();
     }
 }

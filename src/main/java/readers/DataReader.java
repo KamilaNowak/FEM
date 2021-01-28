@@ -1,4 +1,4 @@
-package input;
+package readers;
 
 import lombok.*;
 import org.json.simple.JSONArray;
@@ -22,7 +22,6 @@ public class DataReader {
     private double W;
     private double nH;
     private double nW;
-    private double nE;
     private double k;
     private double c;
     private double ro;
@@ -55,14 +54,14 @@ public class DataReader {
 
         try { input = parser.parse(new FileReader(System.getProperty("user.dir") + "/src/main/java/input/data.json")); }
         catch (Exception e) { throw new FileNotFoundException(); }
-
+        
+        //wczytanie danych z pliku
         JSONObject constants = (JSONObject) input;
         this.H = (double) constants.get("H");
         this.W = (double) constants.get("W");
         this.nH = (double) constants.get("nH");
         this.nW = (double) constants.get("nW");
         this.k = (double) constants.get("k");
-        this.nE = (double) constants.get("nE");
         this.c = (double) constants.get("c");
         this.ro = (double) constants.get("ro");
         this.t0 = (double) constants.get("t0");
@@ -87,23 +86,23 @@ public class DataReader {
         for (Object value : weightsInput) this.weights.add((Double) value);
         for (Object value : weightsInput3) this.weights3.add((Double) value);
 
+        //utworzenie listy punktów dla 2 punktowego wariantu
         for (int i = 0; i < numberOfPcs; i++) {
             for (int j = 0; j < numberOfPcs; j++)
                 integrationPoints.add(new InterpolationNode(this.pc2.get(j), this.pc2.get(i)));
         }
-
+        //utworzenie listy punktów dla 2 punktowego wariantu wraz z WAGAMI
         for (int i = 0; i < numberOfPcs3; i++) {
             for (int j = 0; j < numberOfPcs3; j++) {
-                InterpolationNode in = new InterpolationNode(this.pc3.get(j), this.pc3.get(i));
+                InterpolationNode intNode = new InterpolationNode(this.pc3.get(j), this.pc3.get(i));
                 if (this.pc3.get(j) == 0 || this.pc3.get(i) == 0) {
-                    in.setWeight(getWeights3().get(1));
+                    intNode.setWeight(getWeights3().get(1));
                 } else {
-                    in.setWeight(getWeights3().get(0));
+                    intNode.setWeight(getWeights3().get(0));
                 }
-                integrationPoints3.add(in);
+                integrationPoints3.add(intNode);
             }
         }
       //  System.out.println("getWeights3() : " + getWeights3());
-
     }
 }

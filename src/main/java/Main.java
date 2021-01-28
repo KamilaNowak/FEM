@@ -1,24 +1,20 @@
-import calculations.FEMNetwork;
+import networks.FEMNetwork;
 import calculations.Interpolation;
 import calculations.MatrixCalculates;
-import input.DataReader;
-import org.la4j.LinearAlgebra;
-import org.la4j.Vector;
+import readers.DataReader;
 import printable.Print;
 import schemas.Element;
 import schemas.Network;
-import schemas.Temperatures;
-import utils.MatrixUtils;
-import org.la4j.Matrix;
 
 import java.io.FileNotFoundException;
-import java.sql.SQLOutput;
-import java.util.List;
 
 
 public class Main {
+
+
     public static void main(String[] args) throws FileNotFoundException {
 
+        System.out.println(" ----  Metody elementów skończonych ----");
         MatrixCalculates matrixCalculates = new MatrixCalculates();
 
         DataReader data = new DataReader();
@@ -27,7 +23,6 @@ public class Main {
         int SIZE = (int) (data.getNH() * data.getNH());
 
         FEMNetwork femNetwork = new FEMNetwork();
-
         Network network = femNetwork.createNetwork(data);
         network.printNodes();
         network.printElements();
@@ -52,6 +47,7 @@ public class Main {
             System.out.println("\n Hbc dla " + element.getNodes());
             Print.printMatrixNxM(Hbc, 4, 4);
         }
+
         System.out.println("\nMacierze H dla każdego elementu 2p:");
         for (Element element : network.getElements()) {
             double[][] H = matrixCalculates.calculateHMatrix(element, ksi, eta, data);
@@ -73,7 +69,6 @@ public class Main {
         double[][] C_global = matrixCalculates.calculateGlobalCMatrix(network);
         Print.printMatrixNxM(C_global, C_global.length, C_global.length);
 
-
         System.out.println("\nWektory P dla każdego elementu 2p:");
         for (Element element : network.getElements()) {
             double[] P = matrixCalculates.calculatePMatrix(element, data);
@@ -86,11 +81,11 @@ public class Main {
         double[][] H = (double[][]) aggregation[0];
         double[] P_Global =  (double[]) aggregation[1];
 
-        System.out.println(" {P} = [C]/dT *{t0} + {P}");
+        System.out.println("{P} = [C]/dT *{t0} + {P}");
         Print.printVec(P_Global, SIZE);
 
         System.out.println();
-        System.out.println("\n [H] = [H]+[C]/dT: ");
+        System.out.println("\n[H] = [H]+[C]/dT: ");
         Print.printMatrixNxM(H, H.length, H.length);
 
         System.out.println("\n\n----------------------------------------------------- 3 p ---------------------------------------------------------------\n\n");
